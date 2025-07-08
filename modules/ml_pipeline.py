@@ -109,24 +109,21 @@ class MLModelPipeline:
         print(" Running Exponential Regression...")
 
         # Select only the first feature (curve_fit works on 1D)
-        X_train_flat = self.X_train.iloc[:, 0].values
-        y_train = self.y_train.values
+        X_train_flat = self.X_train.iloc[:, 0].to_numpy()
+        y_train = self.y_train.to_numpy()
 
-        print("X_train_flat shape:", X_train_flat.shape)
-        print("y_train shape:", y_train.shape)
-
+        # Print shapes to debug
         print("self.X_train.shape:", self.X_train.shape)
-        print("self.X_train.iloc[:, 0].shape:", self.X_train.iloc[:, 0].shape)
+        print("self.y_train.shape:", self.y_train.shape)
         print("X_train_flat shape:", X_train_flat.shape)
         print("y_train shape:", y_train.shape)
-
 
         def exp_func(x, a, b):
             return a * np.exp(b * x)
 
         popt, _ = curve_fit(exp_func, X_train_flat, y_train, p0=(1, 0.1))
 
-        X_test_flat = self.X_test.iloc[:, 0].values
+        X_test_flat = self.X_test.iloc[:, 0].to_numpy()
         y_pred = exp_func(X_test_flat, *popt)
 
         mse = mean_squared_error(self.y_test, y_pred)
