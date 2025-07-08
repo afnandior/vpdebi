@@ -104,10 +104,12 @@ class MLModelPipeline:
             "predictions": y_pred
         }
 
-    #  Exponential Regression
+      #  Exponential Regression
     def run_exponential_regression(self):
         print(" Running Exponential Regression...")
-        X_train_flat = self.X_train.values.flatten()
+
+        # Select only the first feature (curve_fit works on 1D)
+        X_train_flat = self.X_train.iloc[:, 0].values.flatten()
         y_train = self.y_train.values
 
         def exp_func(x, a, b):
@@ -115,7 +117,7 @@ class MLModelPipeline:
 
         popt, _ = curve_fit(exp_func, X_train_flat, y_train, p0=(1, 0.1))
 
-        X_test_flat = self.X_test.values.flatten()
+        X_test_flat = self.X_test.iloc[:, 0].values.flatten()
         y_pred = exp_func(X_test_flat, *popt)
 
         mse = mean_squared_error(self.y_test, y_pred)
@@ -131,6 +133,7 @@ class MLModelPipeline:
             "r2": r2,
             "predictions": y_pred
         }
+
 
     #  Logarithmic Regression
     def run_logarithmic_regression(self):
