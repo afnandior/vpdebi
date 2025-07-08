@@ -115,6 +115,12 @@ class MLModelPipeline:
         print("X_train_flat shape:", X_train_flat.shape)
         print("y_train shape:", y_train.shape)
 
+        print("self.X_train.shape:", self.X_train.shape)
+        print("self.X_train.iloc[:, 0].shape:", self.X_train.iloc[:, 0].shape)
+        print("X_train_flat shape:", X_train_flat.shape)
+        print("y_train shape:", y_train.shape)
+
+
         def exp_func(x, a, b):
             return a * np.exp(b * x)
 
