@@ -138,12 +138,15 @@ class MLModelPipeline:
         X_train_flat = self.X_train.values.flatten()
         y_train = self.y_train.values
 
+        X_train_flat = np.where(X_train_flat <= 0, 1e-6, X_train_flat)
+
         def log_func(x, a, b):
             return a + b * np.log(x)
 
         popt, _ = curve_fit(log_func, X_train_flat, y_train, p0=(1, 1))
 
         X_test_flat = self.X_test.values.flatten()
+        X_test_flat = np.where(X_test_flat <= 0, 1e-6, X_test_flat)
         y_pred = log_func(X_test_flat, *popt)
 
         mse = mean_squared_error(self.y_test, y_pred)
