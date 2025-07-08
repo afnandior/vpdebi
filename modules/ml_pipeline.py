@@ -108,7 +108,6 @@ class MLModelPipeline:
         def run_exponential_regression(self):
         print(" Running Exponential Regression...")
 
-        # 🔴 اختاري أول عمود عددي فقط
         numeric_cols = self.X_train.select_dtypes(include=np.number).columns
         if len(numeric_cols) == 0:
             print("No numeric columns found for Exponential Regression.")
@@ -121,8 +120,14 @@ class MLModelPipeline:
 
         feature_col = numeric_cols[0]
 
-        X_train_flat = self.X_train[feature_col].to_numpy()
+        X_train_flat = self.X_train[feature_col].to_numpy().flatten()
         y_train = self.y_train.to_numpy()
+
+        if X_train_flat.shape[0] != y_train.shape[0]:
+            print("Shape mismatch: adjusting X_train_flat to match y_train")
+            min_len = min(X_train_flat.shape[0], y_train.shape[0])
+            X_train_flat = X_train_flat[:min_len]
+            y_train = y_train[:min_len]
 
         print("Using feature:", feature_col)
         print("X_train_flat shape:", X_train_flat.shape)
@@ -131,10 +136,9 @@ class MLModelPipeline:
         def exp_func(x, a, b):
             return a * np.exp(b * x)
 
-        # 🔴 fit
         popt, _ = curve_fit(exp_func, X_train_flat, y_train, p0=(1, 0.1), maxfev=10000)
 
-        X_test_flat = self.X_test[feature_col].to_numpy()
+        X_test_flat = self.X_test[feature_col].to_numpy().flatten()
         y_pred = exp_func(X_test_flat, *popt)
 
         mse = mean_squared_error(self.y_test, y_pred)
