@@ -108,22 +108,33 @@ class MLModelPipeline:
         def run_exponential_regression(self):
         print(" Running Exponential Regression...")
 
-        # Select only the first feature (curve_fit works on 1D)
-        X_train_flat = self.X_train.iloc[:, 0].to_numpy()
+        # 🔴 اختاري أول عمود عددي فقط
+        numeric_cols = self.X_train.select_dtypes(include=np.number).columns
+        if len(numeric_cols) == 0:
+            print("No numeric columns found for Exponential Regression.")
+            return {
+                "model": "Exponential Regression",
+                "mse": None,
+                "r2": None,
+                "predictions": None
+            }
+
+        feature_col = numeric_cols[0]
+
+        X_train_flat = self.X_train[feature_col].to_numpy()
         y_train = self.y_train.to_numpy()
 
-        # Print shapes to debug
-        print("self.X_train.shape:", self.X_train.shape)
-        print("self.y_train.shape:", self.y_train.shape)
+        print("Using feature:", feature_col)
         print("X_train_flat shape:", X_train_flat.shape)
         print("y_train shape:", y_train.shape)
 
         def exp_func(x, a, b):
             return a * np.exp(b * x)
 
-        popt, _ = curve_fit(exp_func, X_train_flat, y_train, p0=(1, 0.1))
+        # 🔴 fit
+        popt, _ = curve_fit(exp_func, X_train_flat, y_train, p0=(1, 0.1), maxfev=10000)
 
-        X_test_flat = self.X_test.iloc[:, 0].to_numpy()
+        X_test_flat = self.X_test[feature_col].to_numpy()
         y_pred = exp_func(X_test_flat, *popt)
 
         mse = mean_squared_error(self.y_test, y_pred)
