@@ -14,7 +14,7 @@ def run_automl(df, features, target, save_dir="outputs/saved_models"):
     results.append(pipeline.run_random_forest_regression())
     results.append(pipeline.run_gradient_boosting_regression())
     results.append(pipeline.run_polynomial_regression(degree=2))
-    results.append(pipeline.run_exponential_regression())
+    #results.append(pipeline.run_exponential_regression())
     results.append(pipeline.run_logarithmic_regression())
     results.append(pipeline.run_power_regression())
 
